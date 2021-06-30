@@ -1,0 +1,11 @@
+import("stdfaust.lib");
+//
+integrator(s) = an.amp_follower(s);
+//
+localmax(frame) = ba.peakholder(frame);
+// max del 1 sec
+delay(del,fb) = (+ : de.delay(ma.SR,ba.sec2samp(d)))~*(fb)
+with{
+    d = min(0, del);
+    dmax = d : ba.sec2samp : ma.np2;
+};
