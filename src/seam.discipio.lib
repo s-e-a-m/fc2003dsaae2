@@ -1,4 +1,20 @@
-// --- LIBRARY ------------------------------------------------
+import("stdfaust.lib");
+
+var1 = 40;
+var2 = 1000;
+var3 = 1000;
+var4 = 12;
+
+//cntrlMain = 42;
+//memWriteLev = 23;
+
+mapsum(x,s,m) = s+(x*(m));
+mapsub(x,s,m) = s-(x*(m));
+mapmul(x,s,m) = m*(x+s);
+mapcond(x) = select2(x>0.5,1, (1-x)*2);
+
+delMax = 2^16;
+//
 integrator(s) = an.amp_follower(s);
 //
 localmax(frame) = ba.peakholder(frame);
@@ -33,7 +49,7 @@ cosq(x) = cos(x)*cos(x);
 
 //================================sampleread
 
-sampleread_wannabe(ratio, memchunk, x) = x <: (it.frwtable(N, S, 0.0, wIdx, _, rIdx)) 
+sampleread_wannabe(ratio, memchunk, x) = x <: (it.frwtable(N, S, 0.0, wIdx, _, rIdx))
                              with{
                                 N = 5;
                                 S = 44100; //TODO change with SR
@@ -46,37 +62,16 @@ sampleread(ratio, memchunk, sig) =
   de.fdelay(maxDelay,d,sig)         *    ma.fmin(d/xfade,1) +
   de.fdelay(maxDelay,d+bufsize,sig) * (1-ma.fmin(d/xfade,1))
 with {
-    maxDelay = 65536;
+	maxDelay = 65536;
     bufsize = int(min(maxDelay, pm.l2s(var1)) * (memchunk) : si.smoo);
     xfade = 128;
-    d = (1 - ratio : si.smoo) : (+ : +(bufsize) : fmod(_,bufsize)) ~ _;
+	d = (1 - ratio : si.smoo) : (+ : +(bufsize) : fmod(_,bufsize)) ~ _;
 };
-
-granular_sampling(ab,sig) = sig : timeStretcher
-with{
-    s = ab/2;
-// buffer(p, x) = de.fdelay(L * ma.SR, p, x);
-wIdx = ba.period(L);
-buffer(p, x) = it.frwtable(3, L, .0, wIdx, x, p);
-hann(x) = sin(ma.frac(x) * ma.PI) ^ 2.0;
-grainRate = hslider("grain rate", 50, 10, 100, 1) : si.smoo;
-// timeFactor = 1 - hslider("factor", 1, .125, 8.0, .001);
-timeFactor = (ma.SR / L) * hslider("factor", 1, .125, 1, .001) : si.smoo;
-// timePhase = os.phasor(L * ma.SR, (1.0 / L) * timeFactor);
-jitter = hslider("jitter", 0, 0, 1, .001) : si.smoo;
-timePhase = os.phasor(L, timeFactor) * ((1 - jitter) + no.noise * jitter);
-ph1 = os.phasor(1, grainRate);
-ph2 = ma.frac(.5 + ph1);
-pos1 = ba.sAndH(ph1 < ph1', timePhase) + ph1 * (ma.SR / grainRate);
-pos2 = ba.sAndH(ph2 < ph2', timePhase) + ph2 * (ma.SR / grainRate);
-head1 = hann(ph1) * buffer(pos1);
-head2 = hann(ph2) * buffer(pos2);
-L = 48000 * 3; // seconds
-timeStretcher(x) = x <: head1 + head2;
-rIdx = timePhase;
-};
-
-//process = _ <: _,sampleread(ratio, memchunk);  
+//process = _ <: _,sampleread(ratio, memchunk);
 
 //ratio = hslider("ratio", 1, 0.5, 2, 0.01);
 //memchunk = hslider("memchunk", 1, 0.1, 1, 0.01);
+
+/*granular sampling = read sample sequences off subsequent buffer memory chunks, and envelopes the signal chunk with a pseudo-Gaussian envelope curve; the particular implementation should allow for time-stretching (slower memory pointer increments at grain level), as well as for "grain density" controls and slight random deviations ("jitter") on grain parameters; no frequency shift necessary*/
+granular_sampling(timeIndex,memWriteDel,cntrlLev1,div) =
+div;
