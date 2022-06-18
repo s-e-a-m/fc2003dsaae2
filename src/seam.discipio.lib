@@ -1,13 +1,4 @@
 declare name "Agostino Di Scipio - AUDIBLE ECOSYSTEMICS n.2 Library";
-declare version "xxx";
-declare author "Giuseppe Silvi";
-declare author "Luca Spanedda";
-declare author "Davide Tedesco";
-declare author "Giovanni Michelangelo D'urso";
-declare author "Alessandro Malcangi";
-declare license "GNU-GPL-v3";
-declare copyright "(c)SEAM 2022";
-declare description "Realised on composer's instructions of the year 2017 edited in L’Aquila, Italy";
 import("stdfaust.lib");
 
 //==============================Library of functions============================
@@ -115,7 +106,129 @@ with {
 //the particular implementation should allow for time-stretching (slower memory pointer increments at grain level),
 //as well as for "grain density" controls and slight random deviations ("jitter") on grain parameters; no frequency shift necessary
 
-granular_sampling(timeIndex,memWriteDel,cntrlLev1,div) =
-div;
+/*
+Granular Sampling -
+version with - Overlap Add To One - Granulator
+for:
+Agostino Di Scipio - AUDIBLE ECOSYSTEMICS
+n.2a / Feedback Study (2003)
+n.2b / Feedback Study, sound installation (2004).
+*/
 
+/*
+- mem.pointer is the pointer to the next location in the memory
+    buffer; in the present notation, it varies between -1 (beginning
+    of buffer) and 1 (end of buffer)
+- mem.pointer : timeIndex1 - a signal between -1 and -0.5
+
+- mem.pointer.jitter is a random deviation of the current
+    mem.pointer value; any viable method can be used to
+    calculate the current actual value of mem.pointer
+- mem.pointer.jitter: (1 - memWriteDel1) / 100
+
+- memWriteDel1 = a signal between 0 and 1
+
+- grain.duration: 0.023 + ((1 - memWriteDel1) / 21) s
+
+- grain.dur.jitter is a random deviation of the current
+    grain.duration value: the current actual grain duration =
+    grain.duration + (rnd ⋅ grain.dur.jitter(0.1) ⋅ grain.duration)
+- with rnd = random value in the interval [-1, 1]
+- grain.dur.jitter: 0.1 - constant value
+
+- density: cntrlLev: a signal between 0 and 1 (1 max, 0 no grains)
+*/
+
+//granular_sampling(timeIndex,memWriteDel,cntrlLev1,div) = div;
+
+bufferDim = 512;
+
+granular_sampling1(timeIndex,memWriteDel,cntrlLev,x) = x <: head1 + head2
+    with{
+
+        // Receive AE Controls
+        mempointer = ((timeIndex+1)/2)*L;
+        mempointerjitter = (1-memWriteDel)/100;
+        grainduration = (0.023+((1 - memWriteDel)/21)); //sec.
+        graindurjitter = 0.1;
+        density = cntrlLev;
+
+        // L = buffer dimension in seconds
+        L = ma.SR*bufferDim;
+        // tableMax = table Max Dimension
+        tableMax = 192000*bufferDim;
+        // Write index - ramp 0 to L
+        wIdx = (+(1) : %(L)) ~ _ : int;
+        buffer(p, x) = it.frwtable(3, tableMax, .0, wIdx, x, p);
+        // Hanning window Equation
+        hann(x) = sin(ma.frac(x) * ma.PI) ^ 2.0;
+        // noise generation for this instance
+        iNoise = no.noise;
+        // Position of the grain in the Buffer
+        timePhase = (mempointer)+((iNoise*mempointerjitter)*L);
+        fixedDimension = ma.SR/10;
+        frequency = ma.SR/(fixedDimension);
+        // two Heads for the read
+        // 0°
+        ph1 = os.phasor(1, frequency);
+        // 180*
+        ph2 = ma.frac(.5 + ph1);
+        // Buffer positions = Position in the Buffer + Grain Read
+        pos1 = ba.sAndH(ph1 < ph1', timePhase) + ph1*(fixedDimension);
+        pos2 = ba.sAndH(ph2 < ph2', timePhase) + ph2*(fixedDimension);
+        // Noises of this Instance
+        iNoise1 = ba.sAndH(ph1 < ph1', iNoise);
+        iNoise2 = ba.sAndH(ph2 < ph2', iNoise);
+        // variableDimension = grain.duration(variable) + grain.dur.jitter
+        graindurjitterfunc = (grainduration*1000)*(iNoise1*graindurjitter);
+        variableDimension1(x) = x*((1+(grainduration*1000))+(graindurjitterfunc)) : min(1);
+        variableDimension2(x) = x*((1+(grainduration*1000))+(graindurjitterfunc)) : min(1);
+        head1 = hann(ph1: variableDimension1) * buffer(pos1);
+        head2 = hann(ph2: variableDimension2) * buffer(pos2);
+    };
+
+
+granular_sampling2(timeIndex,memWriteDel,cntrlLev,x) = x <: head1 + head2
+    with{
+
+        // Receive AE Controls
+        mempointer = ((timeIndex+1)/2)*L;
+        mempointerjitter = (1-memWriteDel)/100;
+        grainduration = (0.023+((1 - memWriteDel)/20)); //sec.
+        graindurjitter = 0.1;
+        density = cntrlLev;
+
+        // L = buffer dimension in seconds
+        L = ma.SR*bufferDim;
+        // tableMax = table Max Dimension
+        tableMax = 192000*bufferDim;
+        // Write index - ramp 0 to L
+        wIdx = (+(1) : %(L)) ~ _ : int;
+        buffer(p, x) = it.frwtable(3, tableMax, .0, wIdx, x, p);
+        // Hanning window Equation
+        hann(x) = sin(ma.frac(x) * ma.PI) ^ 2.0;
+        // noise generation for this instance
+        iNoise = no.noise;
+        // Position of the grain in the Buffer
+        timePhase = (mempointer)+((iNoise*mempointerjitter)*L);
+        fixedDimension = ma.SR/10;
+        frequency = ma.SR/(fixedDimension);
+        // two Heads for the read
+        // 0°
+        ph1 = os.phasor(1, frequency);
+        // 180*
+        ph2 = ma.frac(.5 + ph1);
+        // Buffer positions = Position in the Buffer + Grain Read
+        pos1 = ba.sAndH(ph1 < ph1', timePhase) + ph1*(fixedDimension);
+        pos2 = ba.sAndH(ph2 < ph2', timePhase) + ph2*(fixedDimension);
+        // Noises of this Instance
+        iNoise1 = ba.sAndH(ph1 < ph1', iNoise);
+        iNoise2 = ba.sAndH(ph2 < ph2', iNoise);
+        // variableDimension = grain.duration(variable) + grain.dur.jitter
+        graindurjitterfunc = (grainduration*1000)*(iNoise1*graindurjitter);
+        variableDimension1(x) = x*((1+(grainduration*1000))+(graindurjitterfunc)) : min(1);
+        variableDimension2(x) = x*((1+(grainduration*1000))+(graindurjitterfunc)) : min(1);
+        head1 = hann(ph1: variableDimension1) * buffer(pos1);
+        head2 = hann(ph2: variableDimension2) * buffer(pos2);
+    };
 //process = granular_sampling;
