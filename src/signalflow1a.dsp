@@ -1,6 +1,8 @@
 import("seam.discipio.lib");
 
-//------------------------------------------- signal flow 1a
+//-----------------------signal flow 1a-----------------------
+//Role of the signal flow block: generation of control signals based on mic3 and mic4 input
+
 signal_flow_1a(var1, var2, mic1, mic2, mic3, mic4) = mic1, mic2,(mic3, mic4 <: +,(
   _,_,(integrator(0.01), integrator(0.01) :
   delay(0.01,0.95),delay(0.01,0.95) :

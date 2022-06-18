@@ -1,51 +1,89 @@
+declare name "Agostino Di Scipio - AUDIBLE ECOSYSTEMICS n.2 Library";
+declare version "xxx";
+declare author "Giuseppe Silvi";
+declare author "Luca Spanedda";
+declare author "Davide Tedesco";
+declare author "Giovanni Michelangelo D'urso";
+declare author "Alessandro Malcangi";
+declare license "GNU-GPL-v3";
+declare copyright "(c)SEAM 2022";
+declare description "Realised on composer's instructions of the year 2017 edited in L’Aquila, Italy";
 import("stdfaust.lib");
 
+//==============================Library of functions============================
+
+//--------------------Four variables are to be initialized prior to performance:
+//VAR1
+//distance (in meters) between the two farthest removed loudspeakers on the left-right axis.
 var1 = 40;
+//VAR2
+//rough estimate of the center frequency in the spectrum of the room’s background noise (spectral centroid):
+//to evaluate at rehearsal time, in a situation of "silence".
 var2 = 1000;
+//VAR3
+//subjective estimate of how the room revereberance, valued between 0 ("no reverb") and 1 (“very long reverb”).
 var3 = 1000;
+//VAR4
+//distance (in meters) between the two farthest removed loudspeakers on the front-rear axis.
 var4 = 12;
 
-//cntrlMain = 42;
-//memWriteLev = 23;
-
+//-----------------------------------------------------------------------Mappers
 mapsum(x,s,m) = s+(x*(m));
 mapsub(x,s,m) = s-(x*(m));
 mapmul(x,s,m) = m*(x+s);
 mapcond(x) = select2(x>0.5,1, (1-x)*2);
 
+
+//Maximum delay for the delay lines used
 delMax = 2^16;
-//
+
+//INTEGRATOR
+//returns the average absolute value over a specific time frame (one may use RMS measures, instead, or other amplitude-following methods);
+//output range is [0, 1]
 integrator(s) = an.amp_follower(s);
-//
+
+//LOCAL MAX
+//returns the maximum signal amplitude (absolute value) in a given time frame;
+//frame duration is dynamically adjusted: the next frame duration is set at the end of the previous frame
 localmax(frame) = ba.peakholder(frame);
-// max del 1 sec
+
+//Sepcific delay line with a maximum delay of 1 second
 delay(del,fb) = (+ : de.delay(ma.SR,ba.sec2samp(d)))~*(fb)
 with{
     d = min(0, del);
     dmax = d : ba.sec2samp : ma.np2;
 };
 
-
+//----------------------------------------Mathematical functions for the filters
 eavg(a) = *(a) : +~*(1-a);
+
 
 acor(fc) = cos(omega(fc))-1+sqrt(cosq(omega(fc))-4*cos(omega(fc))+3);
 
-lp1p(fc) = eavg(acor(fc));
-
-hp1(fc) = _<:_-(lp1p(fc));
-// 2pi
+//2π
 twopi = 2*ma.PI;
+//𝜏
 tau = twopi;
-//------------------------------------------------------------------------ e ---
+//e
 eu = 2.71828182845904523536028747135266249775724709369995957496696762772407663;
 ecalc = _ <: (1+(1/_))^_;
-
-//-------------------------------------------------------------------- OMEGA ---
+//OMEGA
 omega(fc) = fc*twopi/ma.SR;
-//------------------------------------------------------- BILINEAR TRANSFORM ---
+//BILINEAR TRANSFORM
 w(fc) = tan(ma.PI*fc/ma.SR);
-//------------------------------------------------------------ SIN^2 - COS^2 ---
+//SIN^2 - COS^2
 cosq(x) = cos(x)*cos(x);
+
+//-----------------------------------------------------------------------Filters
+//LOW PASS ONE POLE FILTER
+lp1p(fc) = eavg(acor(fc));
+
+//process = lp1p(23);
+
+//HIGH PASS FILTER
+hp1(fc) = _<:_-(lp1p(fc));
+
+//process = hp1(23);
 
 //================================sampleread
 
@@ -72,6 +110,12 @@ with {
 //ratio = hslider("ratio", 1, 0.5, 2, 0.01);
 //memchunk = hslider("memchunk", 1, 0.1, 1, 0.01);
 
-/*granular sampling = read sample sequences off subsequent buffer memory chunks, and envelopes the signal chunk with a pseudo-Gaussian envelope curve; the particular implementation should allow for time-stretching (slower memory pointer increments at grain level), as well as for "grain density" controls and slight random deviations ("jitter") on grain parameters; no frequency shift necessary*/
+//GRANULAR SAMPLING
+//read sample sequences off subsequent buffer memory chunks, and envelopes the signal chunk with a pseudo-Gaussian envelope curve;
+//the particular implementation should allow for time-stretching (slower memory pointer increments at grain level),
+//as well as for "grain density" controls and slight random deviations ("jitter") on grain parameters; no frequency shift necessary
+
 granular_sampling(timeIndex,memWriteDel,cntrlLev1,div) =
 div;
+
+//process = granular_sampling;
