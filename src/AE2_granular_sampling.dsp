@@ -7,6 +7,8 @@ declare description "Realised on composer's instructions of the year 2017 edited
 // FAUST standard library
 import("stdfaust.lib");
 
+varUno = 3;
+
 primesnumbers(index) = ba.take(index , list)
     with{
 list =
@@ -15,22 +17,14 @@ list =
 
 primenoise(seed) = (+(primesnumbers(1000+seed))~*(1103515245))/(2147483647.0);
 
-// timeIndex1 - a signal between -1 and -0.5
-GtimeIndex1 = hslider("timeIndex1", -1, -1, -0.5, .001);
-// memWriteDel1 - a signal between 0 and 1
-GmemWriteDel1 = hslider("memWriteDel1", 0, 0, 1, .001);
-// cntrlLev: a signal between 0 and 1 (1 max, 0 no grains)
-GcntrlLev = hslider("cntrlLev", .5, 0, 1, .001);
-// var1 distance (in meters) between the two farthest removed loudspeakers
-Gvar1 = 3;
 
-grain(seed,var1,timeIndex,memWriteDel,cntrlLev,x) = hann(readingSegment) * buffer(bufferSize, readPtr, x)
+grain(seed,varUno,timeIndex,memWriteDel,cntrlLev, divDur, x) = hann(readingSegment) * buffer(bufferSize, readPtr, x)
     with {
 
         // density
         _grainRate = (cntrlLev*(100-1))+1;
         // target grain duration in seconds
-        _grainDuration = 0.023 + ((1 - memWriteDel) / 21);
+        _grainDuration = 0.023 + ((1 - memWriteDel) / divDur);
         // target grain position in the buffer
         _grainPosition = ((timeIndex)+1)/2;
         // make sure to have decorrelated noises
@@ -39,7 +33,7 @@ grain(seed,var1,timeIndex,memWriteDel,cntrlLev,x) = hann(readingSegment) * buffe
         positionJitter = primenoise(seed+2) * (1-memWriteDel)/100;
 
         // buffer size
-        bufferSize = var1*196000;
+        bufferSize = varUno*196000;
         // hann window
         hann(x) = sin(ma.PI * x) ^ 2.0;
 
@@ -83,9 +77,23 @@ grain(seed,var1,timeIndex,memWriteDel,cntrlLev,x) = hann(readingSegment) * buffe
     };
 
 // par (how much grains/instances do you want?)
-grainN(voices,var1,timeIndex,memWriteDel,cntrlLev,x) =
-    par(i, voices, grain(i,var1,timeIndex,memWriteDel,cntrlLev,x));
+grainN(voices,timeIndex,memWriteDel,cntrlLev, divDur,x) =
+    par(i, voices, grain(i,varUno,timeIndex,memWriteDel,cntrlLev, divDur,x/voices));
 
-granular_sampling(x) = grainN(4,Gvar1,GtimeIndex1,GmemWriteDel1,GcntrlLev,x) :> (+,+);
 
-process = os.osc(1000) : granular_sampling;
+// timeIndex1 - a signal between -1 and -0.5
+GtimeIndex = hslider("timeIndex1", -1, -1, -0.5, .001);
+// memWriteDel1 - a signal between 0 and 1
+GmemWriteDel = hslider("memWriteDel1", 0, 0, 1, .001);
+volume = hslider("volume", 0, 0, 10, .001);
+// cntrlLev: a signal between 0 and 1 (1 max, 0 no grains)
+GcntrlLev = hslider("cntrlLev", .5, 0, 1, .001);
+// varUno distance (in meters) between the two farthest removed loudspeakers
+
+GnVoices = 8;
+
+GdivDur = 21;
+
+granular_sampling(nVoices, timeIndex, memWriteDel, cntrlLev, divDur, x) =  grainN(nVoices, timeIndex, memWriteDel, cntrlLev, divDur,x) :> +;
+
+process = os.osc(600): granular_sampling(GnVoices, GtimeIndex,GmemWriteDel, GcntrlLev, GdivDur);

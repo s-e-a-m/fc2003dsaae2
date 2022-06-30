@@ -6,7 +6,7 @@ import("stdfaust.lib");
 //--------------------Four variables are to be initialized prior to performance:
 //VAR1
 //distance (in meters) between the two farthest removed loudspeakers on the left-right axis.
-var1 = 40;
+var1 = 4;
 //VAR2
 //rough estimate of the center frequency in the spectrum of the room’s background noise (spectral centroid):
 //to evaluate at rehearsal time, in a situation of "silence".
