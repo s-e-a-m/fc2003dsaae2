@@ -1,12 +1,12 @@
-import("../../faust-libraries/seam.lib");
+import("seam.lib");
 
 //-----------------------signal flow 2b-----------------------
 //Role of the signal flow block: signal processing of audio input from mic1 and mic2, and mixing of all audio signals
 
-signal_flow_2b(timeIndex1,timeIndex2,triangle3,sig1,sig2,sig3,sig4,sig5,sig6,sig7, memWriteDel1, memWriteDel2, memWriteLev, cntrlLev1,cntrlLev2) =
+signal_flow_2b(timeIndex1,timeIndex2,triangle3, graIn, sig1,sig2,sig3,sig4,sig5,sig6,sig7, memWriteDel1, memWriteDel2, memWriteLev, cntrlLev1,cntrlLev2) =
 ((
-component("AE2_granular_sampling.dsp").granular_sampling(8,timeIndex1,memWriteDel1,cntrlLev1,21, os.osc(600)),//TODO da cambiare oscillatore
-component("AE2_granular_sampling.dsp").granular_sampling(8,timeIndex2,memWriteDel2,cntrlLev2,20, os.osc(600))
+component("AE2_granular_sampling.dsp").granular_sampling(8,timeIndex1,memWriteDel1,cntrlLev1,21, graIn),//TODO da cambiare oscillatore
+component("AE2_granular_sampling.dsp").granular_sampling(8,timeIndex2,memWriteDel2,cntrlLev2,20, graIn)
 //granular_sampling1(timeIndex1,memWriteDel1,cntrlLev1,21), granular_sampling1(timeIndex2,memWriteDel2,cntrlLev2,20)
 <:
  _,_,   *(1-(memWriteLev)),*(1-(memWriteLev)),*(memWriteLev),*(memWriteLev)) : _,_,_,_,ro.cross(2)),
