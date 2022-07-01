@@ -459,4 +459,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Custom
+.svg
 # End of https://www.gitignore.io/api/tex,osx,macos,linux,latex,jekyll,windows
