@@ -5,7 +5,7 @@ import("../../faust-libraries/seam.lib");
 
 var1 = 12;
 
-signal_flow_2b(timeIndex1,timeIndex2,triangle3,graIN,sig1,sig2,sig3,sig4,sig5,sig6,sig7, memWriteDel1, memWriteDel2, memWriteLev, cntrlLev1,cntrlLev2) =
+signal_flow_2b(var1,timeIndex1,timeIndex2,triangle3,graIN,sig1,sig2,sig3,sig4,sig5,sig6,sig7, memWriteDel1, memWriteDel2, memWriteLev, cntrlLev1,cntrlLev2) =
 ((
 sds.granular_sampling(8,var1,timeIndex1,memWriteDel1,cntrlLev1,21, graIN),//TODO da cambiare oscillatore
 sds.granular_sampling(8,var1,timeIndex2,memWriteDel2,cntrlLev2,20, graIN)
