@@ -28,7 +28,7 @@ signal_flow_2a(
         (_<: fi.svf.bp(1000,1), fi.svf.bp(2000,1)),
         de.delay(sds.delMax, pm.l2s(var1)/1.5)  :> (si.bus(4) :>
       _*(cntrlFeed)*(memWriteLev) <:
-      _,_ : (_,(mic1 : sds.hp1(50) : sfi.lp1p(6000) *(1-cntrlMic1)),(mic2 : sds.hp1(50) : sfi.lp1p(6000) *(1-cntrlMic2)) <:
+      _,_ : (_,(mic1 : sfi.hp1(50) : sfi.lp1p(6000) *(1-cntrlMic1)),(mic2 : sfi.hp1(50) : sfi.lp1p(6000) *(1-cntrlMic2)) <:
        _,_,_,_,_,_ : (_,_,_ :> *(triangle1)), !,*(directLevel),*(directLevel)) ,(*(memWriteLev) <:
       (de.delay(sds.delMax,(0.05*ba.sec2samp(cntrlMain))) *(triangle2)*(directLevel)),
       *(1-triangle2)*(directLevel))),_),
