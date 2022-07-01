@@ -4,8 +4,7 @@ declare author "Luca Spanedda";
 declare author "Dario Sanfilippo";
 declare description "Realised on composer's instructions of the year 2017 edited in L’Aquila, Italy";
 
-// FAUST standard library
-import("stdfaust.lib");
+import("../../faust-libraries/seam.lib");
 
 varUno = 3;
 

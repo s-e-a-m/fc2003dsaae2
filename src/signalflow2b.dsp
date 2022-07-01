@@ -1,4 +1,4 @@
-import("seam.discipio.lib");
+import("../../faust-libraries/seam.lib");
 
 //-----------------------signal flow 2b-----------------------
 //Role of the signal flow block: signal processing of audio input from mic1 and mic2, and mixing of all audio signals
@@ -10,9 +10,9 @@ component("AE2_granular_sampling.dsp").granular_sampling(8,timeIndex2,memWriteDe
 //granular_sampling1(timeIndex1,memWriteDel1,cntrlLev1,21), granular_sampling1(timeIndex2,memWriteDel2,cntrlLev2,20)
 <:
  _,_,   *(1-(memWriteLev)),*(1-(memWriteLev)),*(memWriteLev),*(memWriteLev)) : _,_,_,_,ro.cross(2)),
-(sig5 <: _,de.delay(delMax, ba.sec2samp(0.05)) <:
+(sig5 <: _,de.delay(sds.delMax, ba.sec2samp(0.05)) <:
     _*(triangle3),_*(triangle3), _*(1-triangle3),_*(1-triangle3)),
-((sig6 <: _,de.delay(delMax, ba.sec2samp(0.036)) <:
+((sig6 <: _,de.delay(sds.delMax, ba.sec2samp(0.036)) <:
     _*(1-triangle3),_*(1-triangle3),_*(triangle3),_*(triangle3)) : ro.cross(2),ro.cross(2)),
 sig1,sig2,sig2,sig3,sig4,sig7 : _,_,(si.bus(18):> _,_);
 

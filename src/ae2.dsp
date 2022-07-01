@@ -10,8 +10,25 @@ declare license "GNU-GPL-v3";
 declare copyright "(c)SEAM 2022";
 declare description "Realised on composer's instructions of the year 2017 edited in L’Aquila, Italy";
 //declare options "[midi:on]";
+import("../../faust-libraries/seam.lib");
 
-import("seam.discipio.lib");
+
+
+//--------------------Four variables are to be initialized prior to performance:
+//VAR1
+//distance (in meters) between the two farthest removed loudspeakers on the left-right axis.
+var1 = 4;
+//VAR2
+//rough estimate of the center frequency in the spectrum of the room’s background noise (spectral centroid):
+//to evaluate at rehearsal time, in a situation of "silence".
+var2 = 1000;
+//VAR3
+//subjective estimate of how the room revereberance, valued between 0 ("no reverb") and 1 (“very long reverb”).
+var3 = 1000;
+//VAR4
+//distance (in meters) between the two farthest removed loudspeakers on the front-rear axis.
+var4 = 12;
+
 
 //------------------------------------------- signal flow 1a
 
@@ -50,4 +67,4 @@ process = signal_flow_1a(var1,var2) <:
           signal_flow_2a(var1, var2),_,_,_,_,_ :
           signal_flow_2b)~si.bus(2) :
                                     !,!,_,_ :
-          signal_flow_3;
+          signal_flow_3(var4);
