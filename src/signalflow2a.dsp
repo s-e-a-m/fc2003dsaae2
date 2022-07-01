@@ -1,4 +1,4 @@
-import("seam.lib");
+import("../../faust-libraries/seam.lib");
 
 //-----------------------signal flow 2a-----------------------
 //Role of the signal flow block: signal processing of audio input from mic1 and mic2, and mixing of all audio signals

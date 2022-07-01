@@ -1,4 +1,4 @@
-import("seam.lib");
+import("../../faust-libraries/seam.lib");
 
 //-----------------------signal flow 1b-----------------------
 //Role of the signal flow block: generation of control signals based on mic1 and mic2 input, plus internal signal generators

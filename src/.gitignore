@@ -461,4 +461,6 @@ $RECYCLE.BIN/
 
 # Custom
 .svg
+ae2-svg/
+
 # End of https://www.gitignore.io/api/tex,osx,macos,linux,latex,jekyll,windows
