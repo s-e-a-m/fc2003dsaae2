@@ -1,5 +1,7 @@
 import("seam.lib");
 
+
+
 //-----------------------signal flow 1a-----------------------
 //Role of the signal flow block: generation of control signals based on mic3 and mic4 input
 
@@ -17,7 +19,6 @@ var3 = 1000;
 //VAR4
 //distance (in meters) between the two farthest removed loudspeakers on the front-rear axis.
 var4 = 11;
-
 
 signal_flow_1a(
               var1,
@@ -38,10 +39,10 @@ signal_flow_1a(
                 sds.localmax, sds.localmax,_ :
                 -,_ :
                 sds.localmax <:
-                de.delay( ba.sec2samp(12), ba.sec2samp(12)),_ :
+                de.delay(ba.sec2samp(12), ba.sec2samp(12)),_ :
                 + :
                 sds.mapsum(_,0,0.5) :
-              sfi.lp1p(0.5)) :
+              scy.onepole(0.5) : hbargraph("sensext",-1,13)) :
               _ ,(_<: _,_) :
               ro.cross(2),_ :
               _, (_<: _,_,_,_),_ :
@@ -51,8 +52,8 @@ signal_flow_1a(
               (fi.lowpass(3,var2) : sds.integrator(0.1)),
               sds.integrator(0.1),
               sds.integrator(0.01) :
-              _,-,_,_ :
-              *,_,_:
+              _,(- : hbargraph("x-y",-1,1)),_,_ :
+              (* : hbargraph("map 1-x",-1,1)),_,_:
               sds.delayfb(0.01,0.995),
                 sds.delayfb(0.01,0.9),
                 sds.delayfb(0.01,0.995) :
@@ -65,9 +66,10 @@ signal_flow_1a(
               de.delay(sma.imt2samp(var1/2),sma.imt2samp(var1/2)), sds.mapcond,_));
 
 
-//debugging
 
-process =  signal_flow_1a(var1,var2,os.osc(0.01),os.osc(0.03),os.osc(0.02),os.osc(0.05)) : mmeter(10) ;
+process = no.multinoise(4) : par(i,4,*(0.1)) : signal_flow_1a(var1,var2);
+
+//debugging
 
 //generic test
 mmeter(N) = par(i, N, hbargraph("%i",-1, 1));

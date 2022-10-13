@@ -57,7 +57,7 @@ signal_flow_3 = component("signalflow3.dsp").signal_flow_3;
 
 //------------------------------------------- ae2 signal flow
 
-process = signal_flow_1a(var1,var2) <: si.bus(30) :
+/*process = signal_flow_1a(var1,var2) <: si.bus(30) :
           (_, _, _,_,!,!,!,_,!,!,!,_,
           _,_,_,_,_,_,!,!,_,_,
           !,!,!,_,_,_,_,_,!,! :
@@ -66,4 +66,22 @@ process = signal_flow_1a(var1,var2) <: si.bus(30) :
             !,!,!,_,_,!,!,_, signal_flow_2a(var1, var2),_,_,_,_,_ :
           signal_flow_2b(var1))~si.bus(2) :
           !,!,_,_ :
-          signal_flow_3(var4);
+          signal_flow_3(var4);*/
+
+fakesig = no.multinoise(4) : par(i,4,*(ba.db2linear(-18)));
+process = fakesig :  signal_flow_1a(var1,var2) :(_,_,ae2gui);
+
+//------------------------------------------- ae2 GUI
+
+ae2gui = tgroup("AE2GUI", sfg1);
+
+sfg1 =
+    vgroup("[10]Signal Flow 1a",
+    hbargraph("[00]diffHL",0,1),
+    hbargraph("[01]memWriteDel1", 0,1),
+    hbargraph("[02]memWriteDel2", 0,1),
+    hbargraph("[03]memWriteLev", 0,1),
+    hbargraph("[04]cntrlLev1", 0,1),
+    hbargraph("[05]cntrlLev2", 0,1),
+    hbargraph("[06]cntrlFeed", 0,1),
+    hbargraph("[07]cntrlMain", 0,1));
