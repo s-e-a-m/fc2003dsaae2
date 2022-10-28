@@ -1,4 +1,4 @@
-import("../../faust-libraries/seam.lib");
+import("seam.lib");
 
 //-----------------------signal flow 2b-----------------------
 //Role of the signal flow block: signal processing of audio input from mic1 and mic2, and mixing of all audio signals
@@ -19,11 +19,11 @@ var3 = 1000;
 var4 = 11;
 
 signal_flow_2b(
+              //variabili
               var1,
-              timeIndex1,
-              timeIndex2,
-              triangle3,
+              //FEEDBACK da 2a
               graIN,
+              //from 2a
               sig1,
               sig2,
               sig3,
@@ -31,6 +31,11 @@ signal_flow_2b(
               sig5,
               sig6,
               sig7,
+              //from 1b
+              timeIndex1,
+              timeIndex2,
+              triangle3,
+              //from 1a
               memWriteDel1,
               memWriteDel2,
               memWriteLev,
@@ -39,8 +44,8 @@ signal_flow_2b(
               ) =
             (
               (
-              sds.granular_sampling(8,var1,timeIndex1,memWriteDel1,cntrlLev1,21, graIN),
-              sds.granular_sampling(8,var1,timeIndex2,memWriteDel2,cntrlLev2,20, graIN) <:
+              sds.granular_sampling(2,var1,timeIndex1,memWriteDel1,cntrlLev1,21, graIN),
+              sds.granular_sampling(2,var1,timeIndex2,memWriteDel2,cntrlLev2,20, graIN) <:
               _,_,   *(1-(memWriteLev)),*(1-(memWriteLev)),*(memWriteLev),*(memWriteLev)
               ) :
               _,_,_,_,ro.cross(2)

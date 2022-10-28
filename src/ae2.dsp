@@ -10,7 +10,7 @@ declare license "GNU-GPL-v3";
 declare copyright "(c)SEAM 2022";
 declare description "Realised on composer's instructions of the year 2017 edited in L’Aquila, Italy";
 //declare options "[midi:on]";
-import("../../faust-libraries/seam.lib");
+import("seam.lib");
 
 
 
@@ -57,19 +57,54 @@ signal_flow_3 = component("signalflow3.dsp").signal_flow_3;
 
 //------------------------------------------- ae2 signal flow
 
-/*process = signal_flow_1a(var1,var2) <: si.bus(30) :
-          (_, _, _,_,!,!,!,_,!,!,!,_,
-          _,_,_,_,_,_,!,!,_,_,
-          !,!,!,_,_,_,_,_,!,! :
+/*process = //fakesig : _,_,
+          signal_flow_1a(var1,var2) <: si.bus(24) :
+          ( !,!,!,_,!,!,!,_,
+            _,_,_,_,!,!,_,_,
+            !,_,_,_,_,_,!,! :
           (signal_flow_1b(var1,var3) <:
             si.bus(16)) , _,_,_,_,_,!,!,!,_,_,_,_,_:
-            !,!,!,_,_,!,!,_, signal_flow_2a(var1, var2),_,_,_,_,_ :
+            //!,!,!,_,_,!,!,_,
+            !,!,!,_,_,!,!,_,
+            _,_,_,!,!,_,_,!,
+            //signal_flow_2a(var1, var2),_,_,_,_,_ :
+            signal_flow_2a(var1, var2),_,_ :
+
           signal_flow_2b(var1))~si.bus(2) :
           !,!,_,_ :
-          signal_flow_3(var4);*/
+          signal_flow_3(var4);
+*/
 
-fakesig = no.multinoise(4) : par(i,4,*(ba.db2linear(-18)));
-process = fakesig :  signal_flow_1a(var1,var2) :(_,_,ae2gui);
+ae2 = (_,_ <: si.bus(4)),
+        (_,_: signal_flow_1a(var1,var2)<: si.bus(24) :
+            //to 1b
+            !,!,!,_,!,!,!,_,
+            //to 2a
+            _,_,_,_,!,!,_,_,
+            //to 2b
+            !,_,_,_,_,_,!,!
+
+
+)  : ro.crossNM(2,4), si.bus(11)  :
+((signal_flow_1b(var1,var3) <:
+
+//to 2a
+  _,_,_,!,!,_,_,!,
+  //to 2b
+!,!,!,_,_,!,!,_
+  ), si.bus(13)
+  : ro.crossNM(8,2), si.bus(11)
+  : si.bus(7), ro.crossNM(3,6), si.bus(5)
+ : signal_flow_2a(var1,var2), si.bus(8)
+: signal_flow_2b(var1)
+)~si.bus(2)//feedback 1b
+;
+
+
+process = fakesig(4) : ae2;
+
+fakesig(N) = no.multinoise(N) : par(i,N,*(ba.db2linear(-18)));
+//process = fakesig :  signal_flow_1a(var1,var2) : (_,_,ae2gui);
 
 //------------------------------------------- ae2 GUI
 
@@ -85,3 +120,14 @@ sfg1 =
     hbargraph("[05]cntrlLev2", 0,1),
     hbargraph("[06]cntrlFeed", 0,1),
     hbargraph("[07]cntrlMain", 0,1));
+
+sfg2 =
+    vgroup("[20]Signal Flow 1b",
+    hbargraph("[00]cntrlMic1",0,1),
+    hbargraph("[01]cntrlMic2", 0,1),
+    hbargraph("[02]directLevel", 0,1),
+    hbargraph("[03]timeIndex1", 0,1),
+    hbargraph("[04]timeIndex2", 0,1),
+    hbargraph("[05]triangle1", 0,1),
+    hbargraph("[06]triangle2", 0,1),
+    hbargraph("[07]triangle3", 0,1));

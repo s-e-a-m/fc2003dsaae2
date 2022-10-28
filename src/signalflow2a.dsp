@@ -1,4 +1,4 @@
-import("../../faust-libraries/seam.lib");
+import("seam.lib");
 
 //-----------------------signal flow 2a-----------------------
 //Role of the signal flow block: signal processing of audio input from mic1 and mic2, and mixing of all audio signals
@@ -19,15 +19,19 @@ var3 = 1000;
 var4 = 11;
 
 signal_flow_2a(
+              //variabili
               var1,
               var2,
+              //microfoni
+              mic1,
+              mic2,
+              //signal flow 1b
               cntrlMic1,
               cntrlMic2,
               directLevel,
               triangle1,
               triangle2,
-              mic1,
-              mic2,
+              // signal flow 1a
               diffHL,
               memWriteDel1,
               memWriteDel2,
@@ -44,7 +48,7 @@ signal_flow_2a(
                     (_<: fi.svf.bp(1000,1), fi.svf.bp(2000,1)),
                     de.delay(sds.delMax, pm.l2s(var1)/1.5)  :> (si.bus(4) :>
                   _*(cntrlFeed)*(memWriteLev) <:
-                  _,_ : (_,(mic1 : sfi.hp1(50) : sfi.lp1p(6000) *(1-cntrlMic1)),(mic2 : sfi.hp1(50) : sfi.lp1p(6000) *(1-cntrlMic2)) <:
+                  _,_ : (_,(mic1 : sfi.hp1a(50) : sfi.lp1pa(6000) *(1-cntrlMic1)),(mic2 : sfi.hp1a(50) : sfi.lp1pa(6000) *(1-cntrlMic2)) <:
                    _,_,_,_,_,_ : (_,_,_ :> *(triangle1)), !,*(directLevel),*(directLevel)) ,(*(memWriteLev) <:
                   (de.delay(sds.delMax,(0.05*ba.sec2samp(cntrlMain))) *(triangle2)*(directLevel)),
                   *(1-triangle2)*(directLevel))),_),

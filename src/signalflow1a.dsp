@@ -23,12 +23,13 @@ var4 = 11;
 signal_flow_1a(
               var1,
               var2,
-              mic1,
-              mic2,
+            //mic1,
+            //mic2,
               mic3,
               mic4
               ) =
-              mic1, mic2,(mic3, mic4 <:
+              //mic1, mic2,
+              (mic3, mic4 <:
               +,(
                 _,_,(sds.integrator(0.01), sds.integrator(0.01) :
                 sds.delayfb(0.01,0.95),sds.delayfb(0.01,0.95) :
@@ -67,7 +68,7 @@ signal_flow_1a(
 
 
 
-process = no.multinoise(4) : par(i,4,*(0.1)) : signal_flow_1a(var1,var2);
+process = no.multinoise(2) : par(i,2,*(0.1)) : signal_flow_1a(var1,var2);
 
 //debugging
 
