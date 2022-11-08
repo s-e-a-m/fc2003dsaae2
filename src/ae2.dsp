@@ -97,8 +97,9 @@ ae2 = (_,_ <: si.bus(4)),
   : si.bus(7), ro.crossNM(3,6), si.bus(5)
  : signal_flow_2a(var1,var2), si.bus(8)
 : signal_flow_2b(var1)
-)~si.bus(2)//feedback 1b
-;
+)~ si.bus(2)//feedback 1b
+            : si.block(2),si.bus(2)
+            : signal_flow_3(var4);
 
 
 process = fakesig(4) : ae2;

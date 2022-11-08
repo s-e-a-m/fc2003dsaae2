@@ -44,8 +44,10 @@ signal_flow_2b(
               ) =
             (
               (
-              sds.granular_sampling(2,var1,timeIndex1,memWriteDel1,cntrlLev1,21, graIN),
-              sds.granular_sampling(2,var1,timeIndex2,memWriteDel2,cntrlLev2,20, graIN) <:
+                ( var1,timeIndex1,memWriteDel1,cntrlLev1,21,graIN :
+                    sds.granular_sampling( 2 )    ),
+                ( var1,timeIndex2,memWriteDel2,cntrlLev2,20,graIN :
+                    sds.granular_sampling( 2 )    ) <:
               _,_,   *(1-(memWriteLev)),*(1-(memWriteLev)),*(memWriteLev),*(memWriteLev)
               ) :
               _,_,_,_,ro.cross(2)
