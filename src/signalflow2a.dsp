@@ -54,7 +54,7 @@ signal_flow_2a(
                   *(1-triangle2)*(directLevel))),_),
                   (sds.sampleread(var1, ratio4, memchunk4) : fi.highpass(4,50) : de.delay(sds.delMax,pm.l2s(var1)/3)),
                 (sds.sampleread(var1, ratio5, memchunk5) : fi.highpass(4,50) : de.delay(sds.delMax,pm.l2s(var1)/2.5)) )~_ :
-                  _,si.bus(7) : si.bus(5),ro.crossNM(1,2)
+                  _,si.bus(7) : si.bus(5),ro.crossNM(1,2) : ro.crossNM(1,7)
 
               with{
                       ratio1 = (var2+(diffHL*1000))/261;

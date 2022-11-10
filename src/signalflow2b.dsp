@@ -21,8 +21,6 @@ var4 = 11;
 signal_flow_2b(
               //variabili
               var1,
-              //FEEDBACK da 2a
-              graIN,
               //from 2a
               sig1,
               sig2,
@@ -31,18 +29,21 @@ signal_flow_2b(
               sig5,
               sig6,
               sig7,
+              //FEEDBACK da 2a
+              graIN,
               //from 1b
               timeIndex1,
               timeIndex2,
-              triangle3,
               //from 1a
               memWriteDel1,
               memWriteDel2,
               memWriteLev,
               cntrlLev1,
-              cntrlLev2
+              cntrlLev2,
+              //from 1b
+              triangle3
               ) =
-            (
+            sig1,sig2,sig2,sig3,sig4,sig7,(
               (
                 ( var1,timeIndex1,memWriteDel1,cntrlLev1,21,graIN :
                     sds.granular_sampling( 2 )    ),
@@ -58,8 +59,9 @@ signal_flow_2b(
               (sig6 <: _,de.delay(sds.delMax, ba.sec2samp(0.036)) <:
                 _*(1-triangle3),_*(1-triangle3),_*(triangle3),_*(triangle3)) :
                 ro.cross(2),ro.cross(2)
-            ),
-            sig1,sig2,sig2,sig3,sig4,sig7 :
+            )
+             : ro.crossNM(6,2),si.bus(12)
+             :
             _,_,(si.bus(18):> _,_);
 
 process = signal_flow_2b;

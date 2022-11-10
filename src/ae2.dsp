@@ -10,7 +10,7 @@ declare license "GNU-GPL-v3";
 declare copyright "(c)SEAM 2022";
 declare description "Realised on composer's instructions of the year 2017 edited in L’Aquila, Italy";
 //declare options "[midi:on]";
-import("seam.lib");
+import("../../faust-libraries/seam.lib");
 
 
 
@@ -96,6 +96,7 @@ ae2 = (_,_ <: si.bus(4)),
   : ro.crossNM(8,2), si.bus(11)
   : si.bus(7), ro.crossNM(3,6), si.bus(5)
  : signal_flow_2a(var1,var2), si.bus(8)
+ : si.bus(10),ro.crossNM(1,5)
 : signal_flow_2b(var1)
 )~ si.bus(2)//feedback 1b
             : si.block(2),si.bus(2)
