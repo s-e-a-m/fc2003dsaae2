@@ -40,33 +40,27 @@ signal_flow_2a(
               cntrlMain
               ) =
               (_ <:
-                  (sds.sampleread(var1, ratio1, memchunk1), sds.sampleread(var1, ratio2, memchunk2), sds.sampleread(var1, ratio3, memchunk3) :
+(
+sds.sampleRead(var1, (var2+(diffHL*1000)/261), (1-memWriteDel2)),
+sds.sampleRead(var1, ((290-(diffHL*90))/261), ((memWriteLev+memWriteDel1)/2)),
+sds.sampleRead(var1, (((var2*2)-(diffHL*1000))/261), (1-memWriteDel1)) :
                   par(i,3,fi.highpass(4,50)) :
                   si.bus(2), (_<: _,_):
                     de.delay(sds.delMax,pm.l2s(var1)/2),
                     de.delay(sds.delMax,pm.l2s(var1)),
-                    (_<: fi.svf.bp(1000,1), fi.svf.bp(2000,1)),
+                    (_<: sfi.bpbw(((var2/2)*memWriteDel2),diffHL*(400)), sfi.bpbw((var2*(1-memWriteDel1)),1-diffHL*(800))),
                     de.delay(sds.delMax, pm.l2s(var1)/1.5)  :> (si.bus(4) :>
                   _*(cntrlFeed)*(memWriteLev) <:
                   _,_ : (_,(mic1 : sfi.hp1a(50) : sfi.lp1pa(6000) *(1-cntrlMic1)),(mic2 : sfi.hp1a(50) : sfi.lp1pa(6000) *(1-cntrlMic2)) <:
                    _,_,_,_,_,_ : (_,_,_ :> *(triangle1)), !,*(directLevel),*(directLevel)) ,(*(memWriteLev) <:
                   (de.delay(sds.delMax,(0.05*ba.sec2samp(cntrlMain))) *(triangle2)*(directLevel)),
                   *(1-triangle2)*(directLevel))),_),
-                  (sds.sampleread(var1, ratio4, memchunk4) : fi.highpass(4,50) : de.delay(sds.delMax,pm.l2s(var1)/3)),
-                (sds.sampleread(var1, ratio5, memchunk5) : fi.highpass(4,50) : de.delay(sds.delMax,pm.l2s(var1)/2.5)) )~_ :
-                  _,si.bus(7) : si.bus(5),ro.crossNM(1,2) : ro.crossNM(1,7)
+                  (
+sds.sampleRead(var1, ((250+(diffHL*20))/261), 1)
+: fi.highpass(4,50) : de.delay(sds.delMax,pm.l2s(var1)/3)),
+                (
+sds.sampleRead(var1, 0.766283, memWriteLev)
+: fi.highpass(4,50) : de.delay(sds.delMax,pm.l2s(var1)/2.5)))~_ :
+                  _,si.bus(7) : si.bus(5),ro.crossNM(1,2);
 
-              with{
-                      ratio1 = (var2+(diffHL*1000))/261;
-                      memchunk1 = (1-memWriteDel2);
-                      ratio2 = (var2+(diffHL*1000))/261;
-                      memchunk2 = (1-memWriteDel2);
-                      ratio3 = (var2+(diffHL*1000))/261;
-                      memchunk3 = (1-memWriteDel2);
-                       ratio4 = (var2+(diffHL*1000))/261;
-                      memchunk4 = (1-memWriteDel2);
-                       ratio5 = (var2+(diffHL*1000))/261;
-                      memchunk5 = (1-memWriteDel2);
-              };
-
-process = signal_flow_2a;
+process = no.multinoise(13) : par(i,13,*(0.1)) : signal_flow_2a(var1,var2);

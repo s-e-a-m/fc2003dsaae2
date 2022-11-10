@@ -64,4 +64,4 @@ signal_flow_2b(
              :
             _,_,(si.bus(18):> _,_);
 
-process = signal_flow_2b;
+process = no.multinoise(17) : par(i,17,*(0.1)) : signal_flow_2b;

@@ -44,4 +44,4 @@ signal_flow_1b(
                   triangle3(var1) = sds.osctri(1/var1);
               };
 
-process = signal_flow_1b;
+process = no.multinoise(6) : par(i,6,*(0.1)) : signal_flow_1b(var1,var3);
