@@ -1,4 +1,4 @@
-import("../../faust-libraries/seam.lib");
+import("seam.lib");
 
 //-----------------------signal flow 3-----------------------
 //Role of the signal flow block: dispatching of audio signals to output channels
