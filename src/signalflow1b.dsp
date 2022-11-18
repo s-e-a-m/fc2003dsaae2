@@ -13,7 +13,7 @@ var1 = 23;
 var2 = 1000;
 //VAR3
 //subjective estimate of how the room revereberance, valued between 0 ("no reverb") and 1 (“very long reverb”).
-var3 = 1000;
+var3 = 0.2;
 //VAR4
 //distance (in meters) between the two farthest removed loudspeakers on the front-rear axis.
 var4 = 11;
@@ -42,6 +42,20 @@ signal_flow_1b(
                   triangle1(var1, memWriteLev) = sds.osctri(1/(var1*(6)))*memWriteLev;
                   triangle2(var1, cntrlMain) = sds.osctri(var1*(1-cntrlMain));
                   triangle3(var1) = sds.osctri(1/var1);
-              };
+              } :
+              vgroup("Signal Flow 1b",
+               hbargraph("[01]cntrlMic1",0,1),
+               hbargraph("[02]cntrlMic2", 0,1),
+                hbargraph("[03]DirectLevel",0,1),
+               hbargraph("[04]timeIndex1", -1,1),
+               hbargraph("[05]timeIndex2",-1,1),
+               hbargraph("[06]triangle1",0,1),
+               hbargraph("[07]triangle2",0,1),
+               hbargraph("[08]triangle3",0,1)
+              );
 
 process = no.multinoise(6) : par(i,6,*(0.1)) : signal_flow_1b(var1,var3);
+
+fakeosc(N) =  par(i,N,os.osc(i+0.001)*(ba.db2linear(-18)));
+
+//process = fakeosc(6) : signal_flow_1b(var1,var3);

@@ -13,7 +13,7 @@ var1 = 23;
 var2 = 1000;
 //VAR3
 //subjective estimate of how the room revereberance, valued between 0 ("no reverb") and 1 (“very long reverb”).
-var3 = 1000;
+var3 = 0.2;
 //VAR4
 //distance (in meters) between the two farthest removed loudspeakers on the front-rear axis.
 var4 = 11;
@@ -62,6 +62,13 @@ signal_flow_2b(
             )
              : ro.crossNM(6,2),si.bus(12)
              :
-            _,_,(si.bus(18):> _,_);
+            _,_,(si.bus(18):> _,_)
+            :
+              vgroup("Signal Flow 2b",
+               hbargraph("[01]grainOut1",-1,1),
+               hbargraph("[02]grainOut2",-1,1),
+                hbargraph("[03]out1",-1,1),
+               hbargraph("[04]out2",-1,1)
+              );
 
 process = no.multinoise(17) : par(i,17,*(0.1)) : signal_flow_2b;

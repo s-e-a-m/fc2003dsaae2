@@ -10,21 +10,21 @@ declare license "GNU-GPL-v3";
 declare copyright "(c)SEAM 2022";
 declare description "Realised on composer's instructions of the year 2017 edited in L’Aquila, Italy";
 //declare options "[midi:on]";
-import("../../faust-libraries/seam.lib");
+import("seam.lib");
 
 
 
 //--------------------Four variables are to be initialized prior to performance:
 //VAR1
 //distance (in meters) between the two farthest removed loudspeakers on the left-right axis.
-var1 = 23;
+var1 = 12;
 //VAR2
 //rough estimate of the center frequency in the spectrum of the room’s background noise (spectral centroid):
 //to evaluate at rehearsal time, in a situation of "silence".
-var2 = 1000;
+var2 = 150;
 //VAR3
 //subjective estimate of how the room revereberance, valued between 0 ("no reverb") and 1 (“very long reverb”).
-var3 = 1000;
+var3 = 0.2;
 //VAR4
 //distance (in meters) between the two farthest removed loudspeakers on the front-rear axis.
 var4 = 11;
@@ -103,7 +103,14 @@ ae2 = (_,_ <: si.bus(4)),
             : signal_flow_3(var4);
 
 
-process = fakesig(4) : ae2;
+fakeosc(N) =  par(i,N,os.osc(i+0.001)*(ba.db2linear(-42)));
+
+//process = fakeosc(4) : ae2;
+
+process = _,os.osc(0.01),_@ma.SR,os.osc(0.02) : ae2;
+
+//process = fakesig(4) : ae2;
+
 
 fakesig(N) = no.multinoise(N) : par(i,N,*(ba.db2linear(-18)));
 //process = fakesig :  signal_flow_1a(var1,var2) : (_,_,ae2gui);

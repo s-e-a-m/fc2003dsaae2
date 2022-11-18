@@ -13,7 +13,7 @@ var1 = 23;
 var2 = 1000;
 //VAR3
 //subjective estimate of how the room revereberance, valued between 0 ("no reverb") and 1 (“very long reverb”).
-var3 = 1000;
+var3 = 0.2;
 //VAR4
 //distance (in meters) between the two farthest removed loudspeakers on the front-rear axis.
 var4 = 11;
@@ -61,6 +61,21 @@ sds.sampleRead(var1, ((250+(diffHL*20))/261), 1)
                 (
 sds.sampleRead(var1, 0.766283, memWriteLev)
 : fi.highpass(4,50) : de.delay(sds.delMax,pm.l2s(var1)/2.5)))~_ :
-                  _,si.bus(7) : si.bus(5),ro.crossNM(1,2);
+                  _,si.bus(7) : si.bus(5),ro.crossNM(1,2)
+                  :
+              vgroup("Signal Flow 2a",
+               hbargraph("[01]sampleWrite",-1,1),
+               hbargraph("[02]sig1",-1,1),
+                hbargraph("[03]sig2",-1,1),
+               hbargraph("[04]sig3",-1,1),
+               hbargraph("[05]sig4",-1,1),
+               hbargraph("[06]sig5",-1,1),
+               hbargraph("[07]sig6",-1,1),
+               hbargraph("[08]sig7",-1,1)
+              );
 
-process = no.multinoise(13) : par(i,13,*(0.1)) : signal_flow_2a(var1,var2);
+fakeosc(N) =  par(i,N,os.osc(i+0.001) : abs : *(ba.db2linear(-22))) ;
+
+//process = no.multinoise(13) : par(i,13,*(0.1)) : signal_flow_2a(var1,var2);
+
+process = fakeosc(13): signal_flow_2a(var1,var2);
