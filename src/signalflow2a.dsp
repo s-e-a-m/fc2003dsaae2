@@ -64,14 +64,14 @@ sds.sampleRead(var1, 0.766283, memWriteLev)
                   _,si.bus(7) : si.bus(5),ro.crossNM(1,2)
                   :
               vgroup("Signal Flow 2a",
-               hbargraph("[01]sampleWrite",-1,1),
-               hbargraph("[02]sig1",-1,1),
-                hbargraph("[03]sig2",-1,1),
-               hbargraph("[04]sig3",-1,1),
-               hbargraph("[05]sig4",-1,1),
-               hbargraph("[06]sig5",-1,1),
-               hbargraph("[07]sig6",-1,1),
-               hbargraph("[08]sig7",-1,1)
+               (max(-1, min(1)) : hbargraph("[01]sampleWrite",-1,1)),
+               (max(-1, min(1)) : hbargraph("[02]sig1",-1,1)),
+               (max(-1, min(1)) : hbargraph("[03]sig2",-1,1)),
+               (max(-1, min(1)) : hbargraph("[04]sig3",-1,1)),
+               (max(-1, min(1)) : hbargraph("[05]sig4",-1,1)),
+               (max(-1, min(1)) : hbargraph("[06]sig5",-1,1)),
+               (max(-1, min(1)) : hbargraph("[07]sig6",-1,1)),
+               (max(-1, min(1)) : hbargraph("[08]sig7",-1,1))
               );
 
 fakeosc(N) =  par(i,N,os.osc(i+0.001) : abs : *(ba.db2linear(-22))) ;

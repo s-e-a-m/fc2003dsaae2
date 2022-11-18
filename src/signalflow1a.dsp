@@ -64,15 +64,16 @@ signal_flow_1a(
               de.delay(sma.imt2samp(var1/2),sma.imt2samp(var1/2)),
               de.delay(sma.imt2samp(var1/3),sma.imt2samp(var1/3)),_), (_<:
               de.delay(sma.imt2samp(var1/3),sma.imt2samp(var1/3)),
-              de.delay(sma.imt2samp(var1/2),sma.imt2samp(var1/2)), sds.mapcond,_)) :              vgroup("Signal Flow 1a",
-               hbargraph("[01]diffHL",0,1),
-               hbargraph("[02]memWriteDel1", 0,1),
-                hbargraph("[03]memWriteDel2",0,1),
-               hbargraph("[04]memWriteLev", 0,1),
-               hbargraph("[05]CntrlLev1",0,1),
-               hbargraph("[06]CntrlLev2",0,1),
-               hbargraph("[07]CntrlFeed",0,1),
-               hbargraph("[08]CntrlMain",0,1)
+              de.delay(sma.imt2samp(var1/2),sma.imt2samp(var1/2)), sds.mapcond,_)) :              
+              vgroup("Signal Flow 1a",
+               (max(0, min(1)) : hbargraph("[01]diffHL",0,1)),
+               (max(0, min(1)) : hbargraph("[02]memWriteDel1", 0,1)),
+               (max(0, min(1)) : hbargraph("[03]memWriteDel2",0,1)),
+               (max(0, min(1)) : hbargraph("[04]memWriteLev", 0,1)),
+               (max(0, min(1)) : hbargraph("[05]CntrlLev1",0,1)),
+               (max(0, min(1)) : hbargraph("[06]CntrlLev2",0,1)),
+               (max(0, min(1)) : hbargraph("[07]CntrlFeed",0,1)),
+               (max(0, min(1)) : hbargraph("[08]CntrlMain",0,1))
               )
 
               ;

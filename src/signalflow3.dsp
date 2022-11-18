@@ -26,12 +26,12 @@ signal_flow_3(var4) = _,_ <:
                             de.delay(sds.delMax, (var4/344))
                             :
               vgroup("Signal Flow 3",
-               hbargraph("[01]out1",-1,1),
-               hbargraph("[02]out2",-1,1),
-                hbargraph("[03]out3",-1,1),
-               hbargraph("[04]out4",-1,1),
-               hbargraph("[05]out5",-1,1),
-               hbargraph("[06]out6",-1,1)
+               (max(-1, min(1)) : hbargraph("[01]out1",-1,1)),
+               (max(-1, min(1)) : hbargraph("[02]out2",-1,1)),
+               (max(-1, min(1)) : hbargraph("[03]out3",-1,1)),
+               (max(-1, min(1)) : hbargraph("[04]out4",-1,1)),
+               (max(-1, min(1)) : hbargraph("[05]out5",-1,1)),
+               (max(-1, min(1)) : hbargraph("[06]out6",-1,1))
               );
 
 process = signal_flow_3;
