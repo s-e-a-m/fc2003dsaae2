@@ -65,10 +65,10 @@ signal_flow_2b(
             _,_,(si.bus(18):> _,_)
             :
               vgroup("Signal Flow 2b",
-               hbargraph("[01]grainOut1",-1,1),
-               hbargraph("[02]grainOut2",-1,1),
-                hbargraph("[03]out1",-1,1),
-               hbargraph("[04]out2",-1,1)
+               (max(-1, min(1)) : hbargraph("[01]grainOut1",-1,1)),
+               (max(-1, min(1)) : hbargraph("[02]grainOut2",-1,1)),
+               (max(-1, min(1)) : hbargraph("[03]out1",-1,1)),
+               (max(-1, min(1)) : hbargraph("[04]out2",-1,1))
               );
 
 process = no.multinoise(17) : par(i,17,*(0.1)) : signal_flow_2b;

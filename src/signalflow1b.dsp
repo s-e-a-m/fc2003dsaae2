@@ -44,14 +44,14 @@ signal_flow_1b(
                   triangle3(var1) = sds.osctri(1/var1);
               } :
               vgroup("Signal Flow 1b",
-               hbargraph("[01]cntrlMic1",0,1),
-               hbargraph("[02]cntrlMic2", 0,1),
-                hbargraph("[03]DirectLevel",0,1),
-               hbargraph("[04]timeIndex1", -1,1),
-               hbargraph("[05]timeIndex2",-1,1),
-               hbargraph("[06]triangle1",0,1),
-               hbargraph("[07]triangle2",0,1),
-               hbargraph("[08]triangle3",0,1)
+               (max(0, min(1)) : hbargraph("[01]cntrlMic1",0,1)),
+               (max(0, min(1)) : hbargraph("[02]cntrlMic2", 0,1)),
+               (max(0, min(1)) : hbargraph("[03]DirectLevel",0,1)),
+               (max(-1, min(1)) : hbargraph("[04]timeIndex1", -1,1)),
+               (max(-1, min(1)) : hbargraph("[05]timeIndex2",-1,1)),
+               (max(0, min(1)) : hbargraph("[06]triangle1",0,1)),
+               (max(0, min(1)) : hbargraph("[07]triangle2",0,1)),
+               (max(0, min(1)) : hbargraph("[08]triangle3",0,1))
               );
 
 process = no.multinoise(6) : par(i,6,*(0.1)) : signal_flow_1b(var1,var3);
